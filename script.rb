@@ -1,64 +1,62 @@
-# Script that uses the API client to programatically create example data.
-
-# Load the .env file so we can use the environment variables
+require 'httparty'
 require 'dotenv'
 Dotenv.load
 
-# Load the api_client.rb file so we can use the ApiClient class
-require_relative 'api_client'
+class ProcoreApi
+  OAUTH_URL = "https://sandbox.procore.com/oauth/token"
+  BASE_API_URL = "https://sandbox.procore.com/rest/v1.0/"
+  SANDBOX_COMPANY_ID = ENV['SANDBOX_COMPANY_ID']
 
-# Other dependencies
-require 'logger'
+  def self.get_vendor(vendor_id)
+    response = api_request(:get, "vendors/#{vendor_id}")
+    response.parsed_response
+  end
 
-# Enable HTTP logging if DEBUG=true
-# https://github.com/httprb/http/wiki/Logging-and-Instrumentation
-if ENV['DEBUG'] == 'true'
-  HTTP.default_options = HTTP::Options.new(
-    features: {
-      logging: {
-        logger: Logger.new($stdout)
-      }
+  def self.create_vendor(vendor_data)
+    response = api_request(:post, "vendors", vendor_data.merge({"company_id" => SANDBOX_COMPANY_ID}))
+    response.parsed_response
+  end
+
+  private
+
+  def self.api_request(method, endpoint, body = nil)
+    access_token = fetch_access_token
+    headers = {
+      "Authorization" => "Bearer #{access_token}",
+      "Procore-Company-Id" => SANDBOX_COMPANY_ID.to_s,
+      "Content-Type" => "application/json"
     }
-  )
+
+    options = { headers: headers }
+    options[:body] = body.to_json if body
+
+    HTTParty.send(method, "#{BASE_API_URL}#{endpoint}", options)
+  end
+
+  def self.fetch_access_token
+    # Token caching logic could be added here
+    response = HTTParty.post(OAUTH_URL,
+                             headers: { "Content-Type" => "application/json" },
+                             body: {
+                               grant_type: "client_credentials",
+                               client_id: ENV['CLIENT_ID'],
+                               client_secret: ENV['CLIENT_SECRET']
+                             }.to_json)
+    response.parsed_response["access_token"]
+  end
 end
 
-# Instantiate a new api client for the sandbox company.
-client = ApiClient.new
 
-# Use the client to do whatever
-# Write loops, methods, random data generation, etc.
+new_vendor_data = {
+  name: "New Vendor Inc."
+  # Additional vendor data here
+}
 
-# Set example project, or create a new one
-# projects = client.list_projects
-# project_id = projects.first['id']
-project_id = 117418
-
-# Vendors
-# NOTE: Make sure vendor has a primary contact (find out if this can be done via API)
-# new_vendor = client.create_vendor('Example Vendor')
-# vendor_id = new_vendor['id']
-vendor_id = 2749483
-
-# Commitments (purchase order)
-#client.list_work_order_contracts
-client.list_purchase_order_contracts
-
-# Invoices
-invoices = client.list_requisitions(project_id: project_id)
-
-# CCO
-client.list_commitment_change_orders
-
-# PCCO
-pcco = client.list_prime_change_orders(project_id: project_id)
+begin
+  vendor = ProcoreApi.create_vendor(new_vendor_data)
+  puts "Vendor Created: #{vendor}"
+rescue => e
+  puts "Error creating vendor: #{e.message}"
+end
 
 
-puts '===================='
-puts 'vendor:'
-puts vendor_id
-puts
-puts 'invoices:'
-puts invoices
-puts
-
-puts 'Done!'
