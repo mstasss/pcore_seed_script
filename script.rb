@@ -3,10 +3,12 @@ require 'dotenv'
 require './random_name_generator.rb'
 Dotenv.load
 
+COMPANY_ID = 4264590
+
 class ProcoreApi
   OAUTH_URL = "https://sandbox.procore.com/oauth/token"
   BASE_API_URL = "https://sandbox.procore.com/rest/v1.0/"
-  SANDBOX_COMPANY_ID = ENV['SANDBOX_COMPANY_ID']
+
 
   def self.get_vendor(vendor_id)
     response = api_request(:get, "vendors/#{vendor_id}")
@@ -14,9 +16,27 @@ class ProcoreApi
   end
 
   def self.create_vendor(vendor_data)
-    response = api_request(:post, "vendors", vendor_data.merge({"company_id" => SANDBOX_COMPANY_ID}))
+    response = api_request(:post, "vendors", vendor_data.merge({"company_id" => COMPANY_ID}))
     response.parsed_response
   end
+
+  def self.create_purchase_order
+    #create a PO to export
+  end
+
+  def self.create_new_job
+    #create a new job to export
+  end
+
+  def self.create_budget_change
+    #create budget change to export (budget would need to be synced?)
+  end
+
+  def self.create_sub_invoice
+    #create sub invoice (would need to provide a commitment)
+  end
+
+
 
   private
 
@@ -24,7 +44,7 @@ class ProcoreApi
     access_token = fetch_access_token
     headers = {
       "Authorization" => "Bearer #{access_token}",
-      "Procore-Company-Id" => SANDBOX_COMPANY_ID.to_s,
+      "Procore-Company-Id" => COMPANY_ID.to_s,
       "Content-Type" => "application/json"
     }
 
@@ -47,19 +67,19 @@ class ProcoreApi
   end
 end
 
+# TEST CREATE A VENDOR
 
 new_vendor_data = {
-  name: generate_fake_name
-  # Additional vendor data here
+  name: generate_fake_name,
+  company_id: 4264590
+  #Additional vendor data here
 }
 
-# CREATE A VENDOR
+begin
+  vendor = ProcoreApi.create_vendor(new_vendor_data)
+  puts "Vendor Created: #{new_vendor_data[:name]}"
+rescue => e
+  puts "Error creating vendor: #{e.message}"
+end
 
-# begin
-#   vendor = ProcoreApi.create_vendor(new_vendor_data)
-#   puts "Vendor Created: #{vendor}"
-# rescue => e
-#   puts "Error creating vendor: #{e.message}"
-# end
 
-puts new_vendor_data
