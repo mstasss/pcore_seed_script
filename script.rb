@@ -1,5 +1,6 @@
 require 'httparty'
 require 'dotenv'
+require './random_name_generator.rb'
 Dotenv.load
 
 class ProcoreApi
@@ -48,15 +49,17 @@ end
 
 
 new_vendor_data = {
-  name: "New Vendor Inc."
+  name: generate_fake_name
   # Additional vendor data here
 }
 
-begin
-  vendor = ProcoreApi.create_vendor(new_vendor_data)
-  puts "Vendor Created: #{vendor}"
-rescue => e
-  puts "Error creating vendor: #{e.message}"
-end
+# CREATE A VENDOR
 
+# begin
+#   vendor = ProcoreApi.create_vendor(new_vendor_data)
+#   puts "Vendor Created: #{vendor}"
+# rescue => e
+#   puts "Error creating vendor: #{e.message}"
+# end
 
+puts new_vendor_data
