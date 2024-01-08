@@ -1,24 +1,5 @@
-# README
+# Procore Seed Tool
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Description
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+This tool is used to seed a Procore project with a set of standard folders and files. It is intended to be used as a starting point for a new project.
