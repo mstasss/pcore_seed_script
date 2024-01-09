@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 
 const OAUTH_URL = "https://sandbox.procore.com/oauth/token";
 
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       <div>
         <h2>Enter your API credentials</h2>
 
-        <label for="client_id">Client ID</label>
+        <label htmlFor="client_id">Client ID</label>
         <input
           type="text"
           name="client_id"
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
           onChange={(e) => setClientId(e.target.value)}
         />
 
-        <label for="client_secret">Client Secret</label>
+        <label htmlFor="client_secret">Client Secret</label>
         <input
           type="text"
           name="client_secret"
