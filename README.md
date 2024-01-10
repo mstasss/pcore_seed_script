@@ -14,6 +14,11 @@ To access and use this tool, you need:
 
 - don't know yet!
 
-## Setup
+## Development
 
-Typical Rails setup
+- to run the app locally:
+
+  - `yarn build`
+  - `rails s`
+
+- run `yarn build --watch` to automatically rebuild the app when changes are made to files in /frontend
