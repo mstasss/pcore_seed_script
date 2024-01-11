@@ -10,22 +10,12 @@ module Procore
     BASE_API_URL = 'https://sandbox.procore.com/rest/'
     DEFAULT_API_VERSION = 'v1.0'
 
-    # Company ID of sandbox company
-    SANBOX_COMPANY_ID = 4264590
-    # ApiClient is a class that handles HTTP requests to the Procore API.
-    #
-    # The client automatically authenticates with the API via #create_new_access_token.
-    #
+    def initialize(company_id)
+      @company_id = company_id
+    end
 
-    # The initialize method is called behind the scenes when we call `ApiClient.new`
-    # company_id = SANBOX_COMPANY_ID is a default argument, so we can call
-    # `ApiClient.new` to create a new instance with @company_id = SANBOX_COMPANY_ID
-    # or `ApiClient.new(123)` to create a new instance with @company_id = 123
-    # This in essence ties each client instance to a specific company.
-    def initialize(company_id=SANBOX_COMPANY_ID)
-      @company_id   = company_id
-      @access_token = create_new_access_token
-      @oauth_client = initialize_oauth_client
+    def list_projects
+      list('projects')
     end
 
     def list_vendors
@@ -34,10 +24,6 @@ module Procore
 
     def create_vendor(name)
       create('vendors', { name: name })
-    end
-
-    def list_projects
-      list('projects')
     end
 
     # Commitments (purchase order)
@@ -68,10 +54,7 @@ module Procore
       project_id:,
       title:
     )
-      create('purchase_order_contracts', {
-        project_id: project_id,
-        title: title
-      })
+      create('purchase_order_contracts', { project_id: project_id, title: title })
     end
 
     # Purchase Order Contract Line Items
